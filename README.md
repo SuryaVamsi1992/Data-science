@@ -15,3 +15,18 @@ for i in range(len(df)):
 dataframe = pd.DataFrame(temp)
 dataframe.columns = ['Name']
 print (len(dataframe))
+
+
+
+
+
+
+
+sio = StringIO()
+sio.write(df.to_csv(index=None, header=None))  # Write the Pandas DataFrame as a csv to the buffer
+sio.seek(0)  # Be sure to reset the position to the start of the stream
+
+# Copy the string buffer to the database, as if it were an actual file
+with conn.cursor() as c:
+    c.copy_from(sio, "schema.table", columns=dataframe.columns, sep=',')
+    conn.commit()
